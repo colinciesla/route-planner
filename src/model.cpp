@@ -9,7 +9,7 @@
 
 #include "pugixml.hpp"
 
-static Model::Road::Type String2RoadType(std::string_view type) {
+static Model::Road::Type String2RoadType(const std::string_view type) {
   if (type == "motorway")
     return Model::Road::Motorway;
   if (type == "trunk")
@@ -41,7 +41,7 @@ static Model::Road::Type String2RoadType(std::string_view type) {
   return Model::Road::Invalid;
 }
 
-static Model::Landuse::Type String2LanduseType(std::string_view type) {
+static Model::Landuse::Type String2LanduseType(const std::string_view type) {
   if (type == "commercial")
     return Model::Landuse::Commercial;
   if (type == "construction")
@@ -104,14 +104,14 @@ void Model::LoadData(const std::vector<std::byte> &xml) {
 
     for (auto child : node.children()) {
       if (const auto name = std::string_view {child.name()}; name == "nd") {
-        auto ref = child.attribute("ref").as_string();
+        const auto ref = child.attribute("ref").as_string();
         if (auto it = node_id_to_num.find(ref); it != end(node_id_to_num))
           newWayNodes.emplace_back(it->second);
       } else if (name == "tag") {
-        auto category = std::string_view {child.attribute("k").as_string()};
-        auto type = std::string_view {child.attribute("v").as_string()};
+        const auto category = std::string_view {child.attribute("k").as_string()};
+        const auto type = std::string_view {child.attribute("v").as_string()};
         if (category == "highway") {
-          if (auto road_type = String2RoadType(type); road_type != Road::Invalid) {
+          if (const auto road_type = String2RoadType(type); road_type != Road::Invalid) {
             m_Roads.emplace_back();
             m_Roads.back().way = way_num;
             m_Roads.back().type = road_type;
@@ -133,7 +133,8 @@ void Model::LoadData(const std::vector<std::byte> &xml) {
           m_Waters.emplace_back();
           m_Waters.back().outer = {way_num};
         } else if (category == "landuse") {
-          if (auto landuse_type = String2LanduseType(type); landuse_type != Landuse::Invalid) {
+          if (const auto landuse_type = String2LanduseType(type);
+              landuse_type != Landuse::Invalid) {
             m_Landuses.emplace_back();
             m_Landuses.back().outer = {way_num};
             m_Landuses.back().type = landuse_type;
@@ -145,7 +146,6 @@ void Model::LoadData(const std::vector<std::byte> &xml) {
 
   for (const auto &relation : doc.select_nodes("/osm/relation")) {
     auto node = relation.node();
-    auto noode_id = std::string_view {node.attribute("id").as_string()};
     std::vector<int> outer, inner;
     auto commit = [&](Multipolygon &mp) {
       mp.outer = std::move(outer);
@@ -192,10 +192,10 @@ void Model::AdjustCoordinates() {
   constexpr auto pi = 3.14159265358979323846264338327950288;
   constexpr auto deg_to_rad = 2. * pi / 360.;
   constexpr auto earth_radius = 6378137.;
-  const auto lat2ym = [&](double lat) {
+  const auto lat2ym = [&](const double lat) {
     return log(tan(lat * deg_to_rad / 2 + pi / 4)) / 2 * earth_radius;
   };
-  const auto lon2xm = [&](double lon) { return lon * deg_to_rad / 2 * earth_radius; };
+  const auto lon2xm = [&](const double lon) { return lon * deg_to_rad / 2 * earth_radius; };
   const auto dx = lon2xm(m_MaxLon) - lon2xm(m_MinLon);
   const auto dy = lat2ym(m_MaxLat) - lat2ym(m_MinLat);
   const auto min_y = lat2ym(m_MinLat);

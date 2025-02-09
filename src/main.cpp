@@ -17,7 +17,7 @@ static std::optional<std::vector<std::byte>> ReadFile(const std::string &path) {
   if (!is)
     return std::nullopt;
 
-  auto size = is.tellg();
+  const auto size = is.tellg();
   std::vector<std::byte> contents(size);
 
   is.seekg(0);
@@ -28,7 +28,7 @@ static std::optional<std::vector<std::byte>> ReadFile(const std::string &path) {
   return std::move(contents);
 }
 
-int main(int argc, const char** argv) {
+int main(const int argc, const char** argv) {
   std::string osm_data_file;
   if (argc > 1) {
     for (int i = 1; i < argc; ++i)
@@ -45,16 +45,12 @@ int main(int argc, const char** argv) {
   if (osm_data.empty() && !osm_data_file.empty()) {
     std::cout << "Reading OpenStreetMap data from the following file: " << osm_data_file
               << std::endl;
-    auto data = ReadFile(osm_data_file);
-    if (!data)
+    if (auto data = ReadFile(osm_data_file); !data)
       std::cout << "Failed to read." << std::endl;
     else
       osm_data = std::move(*data);
   }
 
-  // TODO 1: Declare floats `start_x`, `start_y`, `end_x`, and `end_y` and get
-  // user input for these values using std::cin. Pass the user input to the
-  // RoutePlanner object below in place of 10, 10, 90, 90.
   float start_x, start_y, end_x, end_y;
 
   std::cout << "Enter the start x coordinate: ";

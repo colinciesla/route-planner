@@ -68,7 +68,7 @@ void Render::DrawStartPosition(io2d::output_surface &surface) const {
     return;
 
   io2d::render_props aliased {io2d::antialias::none};
-  io2d::brush foreBrush {io2d::rgba_color::green};
+  const io2d::brush foreBrush {io2d::rgba_color::green};
 
   auto pb = io2d::path_builder {};
   pb.matrix(m_Matrix);
@@ -237,7 +237,7 @@ void Render::BuildLanduseBrushes() {
                                     io2d::brush {io2d::rgba_color {209, 209, 209}});
 }
 
-static float RoadMetricWidth(Model::Road::Type type) {
+static float RoadMetricWidth(const Model::Road::Type type) {
   switch (type) {
     case Model::Road::Motorway:
     case Model::Road::Trunk:
@@ -259,7 +259,7 @@ static float RoadMetricWidth(Model::Road::Type type) {
   }
 }
 
-static io2d::rgba_color RoadColor(Model::Road::Type type) {
+static io2d::rgba_color RoadColor(const Model::Road::Type type) {
   switch (type) {
     case Model::Road::Motorway:
       return io2d::rgba_color {226, 122, 143};
@@ -282,7 +282,7 @@ static io2d::rgba_color RoadColor(Model::Road::Type type) {
   }
 }
 
-static io2d::dashes RoadDashes(Model::Road::Type type) {
+static io2d::dashes RoadDashes(const Model::Road::Type type) {
   return type == Model::Road::Footway ? io2d::dashes {0.f, {1.f, 2.f}} : io2d::dashes {};
 }
 

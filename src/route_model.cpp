@@ -29,7 +29,7 @@ void RouteModel::CreateNodeToRoadHashmap() {
 RouteModel::Node* RouteModel::Node::FindNeighbor(const std::vector<int> &node_indices) const {
   Node* closest_node = nullptr;
 
-  for (int node_index : node_indices) {
+  for (const int node_index : node_indices) {
     if (Node node = parent_model->SNodes()[node_index];
         this->distance(node) != 0 && !node.visited) {
       if (closest_node == nullptr || this->distance(node) < this->distance(*closest_node)) {
@@ -48,7 +48,7 @@ void RouteModel::Node::FindNeighbors() {
   }
 }
 
-RouteModel::Node &RouteModel::FindClosestNode(float x, float y) {
+RouteModel::Node &RouteModel::FindClosestNode(const float x, const float y) {
   Node input;
   input.x = x;
   input.y = y;
@@ -56,9 +56,9 @@ RouteModel::Node &RouteModel::FindClosestNode(float x, float y) {
   float min_dist = std::numeric_limits<float>::max();
   int closest_idx = 0;
 
-  for (const Road &road : Roads()) {
-    if (road.type != Road::Type::Footway) {
-      for (const int node_idx : Ways()[road.way].nodes) {
+  for (const auto &[roadWay, roadType] : Roads()) {
+    if (roadType != Road::Type::Footway) {
+      for (const int node_idx : Ways()[roadWay].nodes) {
         if (const float dist = input.distance(SNodes()[node_idx]); dist < min_dist) {
           closest_idx = node_idx;
           min_dist = dist;

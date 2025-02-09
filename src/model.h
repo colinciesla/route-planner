@@ -57,7 +57,7 @@ class Model {
           Railway,
           Residential
         };
-        Type type;
+        Type type = Invalid;
     };
 
     explicit Model(const std::vector<std::byte> &xml);
